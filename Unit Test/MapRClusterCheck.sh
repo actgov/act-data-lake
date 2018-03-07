@@ -1,5 +1,5 @@
 # ===============================================================================================================================
-# Descriptiopn :  Script to test whtther the cluster is secuered or not
+# Descriptiopn : Script to test whtther the cluster is secuered or not
 # Author       : Selvaraaju Murugesan
 # Date         : 14/07/2017
 # Authorsed by :
