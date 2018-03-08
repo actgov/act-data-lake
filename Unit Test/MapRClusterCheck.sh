@@ -1,18 +1,18 @@
-# ===============================================================================================================================
-# Descriptiopn : Script to test whtther the cluster is secuered or not
-# Author       : Selvaraaju Murugesan
-# Date         : 14/07/2017
-# Authorsed by :
-# Last Modified: 16/10/2017
-# Audi Log     : Added new code to validate some operations
-# ===============================================================================================================================
+# =======================================================================================
+# Description   : Script to test whether the cluster is working and secure
+# Author        : Phil Crawford / Stuart Wilson
+# Date          : 14/07/2017
+# Last Modified : 08/03/2018
+#
+# Based on code by Selvaraaju Murugesan
+# =======================================================================================
 
 
 #Some basic information about the cluster
 clear
 
-echo "OS :" 
-cat /etc/*release | grep -m1 -i -o -e ubuntu -e redhat -e 'red hat' -e centos
+echo "OS :" cat /etc/redhat-release
+#cat /etc/*release | grep -m1 -i -o -e ubuntu -e redhat -e 'red hat' -e centos
 echo -e "\n CPU Info"
 grep '^model name' /proc/cpuinfo | sort -u
 echo -e "\n Host name"
@@ -24,9 +24,9 @@ echo -e "\n"
 
 # Test 1 : Test whether the cluster is secure or not 
 
-searchstr="secure=rue"
+searchstr="secure=true"
 file="/opt/mapr/conf/mapr-clusters.conf"
-if grep -q "$searchstr" $file;
+if grep -q "$searchstr" $file; then
         echo "Cluster is Secure"
         echo "Test 1 Pass"
 else
