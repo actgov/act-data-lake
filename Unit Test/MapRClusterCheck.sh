@@ -24,9 +24,9 @@ echo -e "\n"
 
 # Test 1 : Test whether the cluster is secure or not 
 
-searchstr="secure=rue"
+searchstr="secure=true"
 file="/opt/mapr/conf/mapr-clusters.conf"
-if grep -q "$searchstr" $file;
+if grep -q "$searchstr" $file; then
         echo "Cluster is Secure"
         echo "Test 1 Pass"
 else
