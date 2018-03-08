@@ -1,17 +1,18 @@
-# =======================================================================================
+# ===========================================================================
 # Description   : Script to test whether the cluster is working and secure
 # Author        : Phil Crawford / Stuart Wilson
 # Date          : 14/07/2017
 # Last Modified : 08/03/2018
 #
 # Based on code by Selvaraaju Murugesan
-# =======================================================================================
+# ===========================================================================
 
 
 #Some basic information about the cluster
 clear
 
-echo "OS :" cat /etc/redhat-release
+echo "OS :" 
+cat /etc/redhat-release
 #cat /etc/*release | grep -m1 -i -o -e ubuntu -e redhat -e 'red hat' -e centos
 echo -e "\n CPU Info"
 grep '^model name' /proc/cpuinfo | sort -u
