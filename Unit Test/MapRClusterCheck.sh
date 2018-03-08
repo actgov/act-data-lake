@@ -1,6 +1,6 @@
 # ===============================================================================================================================
 # Descriptiopn :  Script to test whtther the cluster is secuered or not
-# Author       : Selvaraaju Murugesan
+# Author       : CAT
 # Date         : 14/07/2017
 # Authorsed by :
 # Last Modified: 16/10/2017
