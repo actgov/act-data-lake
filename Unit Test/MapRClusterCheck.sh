@@ -11,24 +11,34 @@
 #Some basic information about the cluster
 clear
 
-echo "OS :" 
+echo -n "OS : " 
 cat /etc/redhat-release
-#cat /etc/*release | grep -m1 -i -o -e ubuntu -e redhat -e 'red hat' -e centos
-echo -e "\n CPU Info"
-grep '^model name' /proc/cpuinfo | sort -u
-echo -e "\n Host name"
+echo "CPU Info : "
+echo "--------  " 
+
+# The following command doesn't seem to provide an output in this script
+# However running this in the command line does provide the information
+val=$( grep '^model name:' /proc/cpuinfo ) 
+echo "$val"
+echo 
+echo -e "Host name :"
 hostname -f
-echo -e "\n Host IP"
+echo -e "Host IP :"
 hostname -i
 echo -e "\n"
+
+
+
+
 
 
 # Test 1 : Test whether the cluster is secure or not 
 
 searchstr="secure=true"
 file="/opt/mapr/conf/mapr-clusters.conf"
+echo "Secure Cluster :"
 if grep -q "$searchstr" $file; then
-        echo "Cluster is Secure"
+        echo "Cluster is Secure:"
         echo "Test 1 Pass"
 else
         echo "Test 1 Fail : Cluster is not Secure"
@@ -37,7 +47,7 @@ echo -e "\n"
 
 # Test 2 : Number of Nodes
 val=$(maprcli dashboard info -json | grep nodesUsed)
-echo "Number of Nodes"
+echo "Number of Nodes :"
 if echo "$val" | grep -q 3 ; then
         echo "Number of Nodes is 3"
         echo "Test 2 Pass "
@@ -49,7 +59,7 @@ echo -e "\n"
 # Test 3 : NFS Mount
 val=$(cat /proc/mounts | grep mapr)
 #echo $val
-echo "NFS Mounted ?"
+echo "NFS Mounted :"
 if echo "$val" | grep -q "mapr" && echo "$val" | grep -q "nfs" ; then
         echo "NFS Mount True"
         echo "Test 3 Pass "
