@@ -54,13 +54,13 @@ echo 'Test Pass'
 # Test Case 3 : Create HIVE view to point to current parittion
 
 echo 'Test Case 3 : Creation of HIVE View that points to current partition'
-FILE=/home/TestScripts/Choose.properties
+FILE=./Choose.properties
 hdbname=$(grep -i 'HDatabaseName' $FILE  | cut -f2 -d'=')
 htablename=$(grep -i 'HTableName' $FILE  | cut -f2 -d'=')
 hviewname=$(grep -i 'HViewName' $FILE  | cut -f2 -d'=')
 echo "Creating an nternal  database - " $hdbname
 echo  "and an internal Hive table - " $htablename
-hive -hiveconf DB_NAME=$hdbname -hiveconf TABLE_NAME=$htablename hiveconf VIEW_NAME=$hviewname -f /TestScripts/Query_View.hql
+hive -hiveconf DB_NAME=$hdbname -hiveconf TABLE_NAME=$htablename hiveconf VIEW_NAME=$hviewname -f ./Query_View.hql
 
 # Need validation Code here : Future development
 echo 'Test Pass'
