@@ -6,7 +6,7 @@
 #
 # Based on code by Selvaraaju Murugesan
 # ===========================================================================
-#dog
+
 
 #Some basic information about the cluster
 clear
