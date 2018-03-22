@@ -61,7 +61,7 @@ G=$(maprcli volume info -name Volume$NameVar -json |grep "Volume"$NameVar)
 echo $G
 read -p "just ran maprcli - press enter"
 
-
+hi there
 
 
 
