@@ -48,6 +48,7 @@ echo
 echo "Please open up MCS"
 echo
 <<<<<<< HEAD
+<<<<<<< HEAD
 # 
 =======
 
@@ -89,5 +90,8 @@ maprcli volume modify -name Directorate1 -quota 750MB
 
 
 >>>>>>> e9f3b0d... remove large files
+=======
+# 
+>>>>>>> c8aae27c5aa686fb3e4299752b444ed4443b572c
 
 
