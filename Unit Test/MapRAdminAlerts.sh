@@ -11,6 +11,7 @@ TempDir=$"/tmp/"
 
 # Below is a variable (random word) that is used to ensure these are unique tests
 NameVar=$"Giraffe"
+echo
 echo "(" $NameVar "is the unique word to ensure these tests are current.)"
 echo
 
@@ -45,25 +46,37 @@ echo
 
 # Continue to copy files to cluster and check alerts until visually confirmed
 
-echo "Please open up MCS"
-echo
-<<<<<<< HEAD
-<<<<<<< HEAD
-# 
-=======
-
+#echo "Please open up MCS"
+#echo
 
 # Change quota and advisory quota for $VolumeNameVar volume
 
 echo "Changing quota and advisory quota for Volume" $VolumeNameVar
 
-if [maprcli volume info -name Volume$NameVar -json |grep -q "Volume"$NameVar]; then
+# Creating a volume called
+
+maprcli volume create -name "Volume"$NameVar -path /Data/$NameVar -advisoryquota 100M -quota 500M -replication 3 -schedule 2 -type rw
+
+G=$(maprcli volume info -name Volume$NameVar -json |grep "Volume"$NameVar)
+echo $G
+read -p "just ran maprcli - press enter"
+
+
+
+
+
+
+
+val=$(maprcli volume info -name Volume$NameVar -json | grep V)
+echo "the value of val is " $val
+
+if echo "$val" | grep -q $NamVar; then
     echo "yes" 
 else
     echo "no"
 fi
 
-read -p "pause"
+read -p "pause - press enter"
 
 
 maprcli volume create -name "Volume"$NameVar -path /Data/$NameVar -advisoryquota 100M -quota 500M -replication 3 -schedule 2 -type rw
@@ -71,9 +84,9 @@ maprcli volume create -name "Volume"$NameVar -path /Data/$NameVar -advisoryquota
 maprcli volume info -name $VolumeNameVar -json |grep "quota"
 
 
-read -p ""
+read -p "press enter"
 
-""
+
 
 maprcli volume modify -name Directorate1 -advisoryquota 500MB
 maprcli volume modify -name Directorate1 -quota 750MB
@@ -88,10 +101,5 @@ maprcli volume modify -name Directorate1 -quota 750MB
 
 
 
-
->>>>>>> e9f3b0d... remove large files
-=======
-# 
->>>>>>> c8aae27c5aa686fb3e4299752b444ed4443b572c
 
 
