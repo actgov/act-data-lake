@@ -2,7 +2,7 @@
 # Description   : Script to test MapR alerts are working for excess data in Volumes
 # Author        : Stuart Wilson
 # Date          : 21/03/2018
-# Last Modified : 21/03/2018
+# Last Modified : 22/03/2018
 #
 # ================================================================================
 
@@ -58,6 +58,7 @@ maprcli volume list -json | grep "Volume$NameVar"
 echo 
 
 
+<<<<<<< HEAD
 echo    "Just created a volume called Volume"$NameVar", please confirm in the MCS"
 echo
 read -p "Or press Enter"
@@ -76,6 +77,9 @@ echo
 echo "Let's see what the quota are now"
 maprcli volume info -name "Volume$NameVar" -json | grep quota
 echo
+=======
+hi there
+>>>>>>> 85fd295eb1d8f0b6a2029194be39487b08fe4698
 
 # Now we fill up the disks and set off the alarms
 
