@@ -7,10 +7,10 @@
 # ================================================================================
 
 # Varibles for this script
-TempDir=$"/tmp/"
+TempDir=$"/tmp"
 
 # Below is a variable (random word) that is used to ensure these are unique tests
-NameVar=$"Giraffe"
+NameVar=$"Blue"
 echo
 echo "(" $NameVar "is the unique word to ensure these tests are current.)"
 echo
@@ -35,63 +35,97 @@ cat test1.data >> test0.data
 cat test0.data >> test1.data
 cat test1.data >> test0.data
 cat test0.data >> test1.data
-mv ./test1.data ./test1${NameVar}.data
-mv ./test0.data ./test0${NameVar}.data
+mv ./test1.data $TempDir/test1${NameVar}.data
+mv ./test0.data $TempDir/test0${NameVar}.data
 
 
 # Show files
-ls -hl test*.data 
+echo "Here are the files created"
+val=$"$TempDir/test*"
+echo $val
+ls -hl $val
+echo
+ 
+# Creating a volume called
+echo "Now we create a volume called Volume$NameVar"
+echo
+maprcli volume create -name "Volume"$NameVar -path /Volume$NameVar -advisoryquota 100M -quota 500M -replication 3 -schedule 2 -type rw
+read -p "Pause until the volume is up and the data is replicated"
+echo
+
+echo "CLI check - search for Volume"$NameVar
+maprcli volume list -json | grep "Volume$NameVar"
 echo 
 
 
-# Continue to copy files to cluster and check alerts until visually confirmed
+echo    "Just created a volume called Volume"$NameVar", please confirm in the MCS"
+echo
+read -p "Or press Enter"
+echo 
+# Check and change the quota for the volume
 
-#echo "Please open up MCS"
-#echo
+echo "Now we will change quota and advisory quota for Volume"$NameVar
+echo
+echo "Currently the quotas are"
+maprcli volume info -name "Volume$NameVar" -json | grep quota
+echo
+echo "Now we're changing the quotas..."
+maprcli volume modify -name "Volume$NameVar" -advisoryquota 500MB
+maprcli volume modify -name "Volume$NameVar" -quota 600MB
+echo
+echo "Let's see what the quota are now"
+maprcli volume info -name "Volume$NameVar" -json | grep quota
+echo
 
-# Change quota and advisory quota for $VolumeNameVar volume
-
-echo "Changing quota and advisory quota for Volume" $VolumeNameVar
-
-# Creating a volume called
-
-maprcli volume create -name "Volume"$NameVar -path /Data/$NameVar -advisoryquota 100M -quota 500M -replication 3 -schedule 2 -type rw
-
-G=$(maprcli volume info -name Volume$NameVar -json |grep "Volume"$NameVar)
-echo $G
-read -p "just ran maprcli - press enter"
-
-
-
-
-
-
-
-val=$(maprcli volume info -name Volume$NameVar -json | grep V)
-echo "the value of val is " $val
-
-if echo "$val" | grep -q $NamVar; then
-    echo "yes" 
-else
-    echo "no"
-fi
-
-read -p "pause - press enter"
+# Now we fill up the disks and set off the alarms
 
 
-maprcli volume create -name "Volume"$NameVar -path /Data/$NameVar -advisoryquota 100M -quota 500M -replication 3 -schedule 2 -type rw
+echo "Now we will fill up the volume with our test data and trigger the alarms"
+echo
+# variables for source and destination
+val1=$"$TempDir/test*"
+val2=$"/Volume$NameVar"
 
-maprcli volume info -name $VolumeNameVar -json |grep "quota"
+echo "We first make a directory on our volume"
+val3=$"$val2/Sub$NameVar"
+
+echo $val3
+hadoop fs -mkdir $val3
+echo
+read -p "Pause to look"
+echo
+echo "We now copy $val1 to $val2"
+
+echo "hadoop fs -copyFromLocal $val1 $val3/"
+
+hadoop fs -copyFromLocal $val1 $val3/
+
+echo "hadoop fs -copyFromLocal $val1 $val3/test2.data"
+
+hadoop fs -copyFromLocal $val1 $val3/test2.data 
+
+echo
+echo "Let's print out what has been copied"
+
+hadoop fs -ls $val3
+
+read -p "Pause"
 
 
-read -p "press enter"
 
+# Remove the volume
+echo
+echo "Now we remove the volume"
+echo
+read -p "Are you sure you want to remove the volume?"
+maprcli volume remove -force true -name Volume$NameVar
+echo "Here are the volumes left"
+maprcli volume list -json | grep volumename
 
+# Remove data files 
 
-maprcli volume modify -name Directorate1 -advisoryquota 500MB
-maprcli volume modify -name Directorate1 -quota 750MB
-
-
+rm $TempDir/test1${NameVar}.data
+rm $TempDir/test0${NameVar}.data
 
 
 
