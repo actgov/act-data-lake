@@ -29,7 +29,6 @@ echo
 # Create blanket data files using Cyclist_Crashes.csv as a seed
 #  This should create test0.data (~100MB) and test1.data (~161MB)
 echo "Creating testdata files."
-echo
 cat Cyclist_Crashes.csv > test0.data
 cat test0.data > test1.data
 cat test1.data >> test0.data
@@ -63,18 +62,22 @@ VolumeName="Volume"$NameVar
 echo
 echo "Now we create a volume called $VolumeName."
 echo
+echo "${cc_green}  maprcli volume create -name "Volume"$NameVar -path /Volume$NameVar -advisoryquota 100M -quota 500M -replication 3 -schedule 2 -type rw"
 maprcli volume create -name "Volume"$NameVar -path /Volume$NameVar -advisoryquota 100M -quota 500M -replication 3 -schedule 2 -type rw
-echo
-read -p "(Pause)"
+echo "${cc_normal}"
+#read -p "(Pause)"
 echo
 
+echo
 echo "Let's confirm the $VolumeName volume has been created"
+echo
+echo "${cc_green}  maprcli volume list -json | grep $VolumeName ${cc_normal}"
 echo
 maprcli volume list -json | grep $VolumeName
 echo
 echo "Just created a volume called "$VolumeName", which can also be confirmed in the MCS"
 echo
-read -p "(Pause)"
+#read -p "(Pause)"
 echo 
 
 # Check and change the quota for the volume
@@ -82,6 +85,9 @@ echo
 echo "Now we will change quota and advisory quota for $VolumeName."
 echo
 echo "Currently the quotas are."
+echo
+echo "${cc_green}  maprcli volume info -name $VolumeName -json | grep quota ${cc_normal}"
+echo
 maprcli volume info -name $VolumeName -json | grep quota
 echo
 echo "Now we're changing the quotas..."
@@ -91,11 +97,12 @@ echo
 echo "Let's see what the quota are now."
 maprcli volume info -name $VolumeName -json | grep quota
 echo
+#read -p "(Pause)"
 
 
 # Now we fill up the disks and set off the alarms
 
-
+echo
 echo "Now we will fill up the volume with our test data and trigger the alarms."
 echo
 # variables for source and destination
@@ -113,7 +120,7 @@ echo "${cc_green}  hapdoop fs -ls /$VolumeName ${cc_normal}"
 echo
 hadoop fs -ls /$VolumeName
 echo
-read -p "(Pause)"
+#read -p "(Pause)"
 
 echo
 echo "Now we will copy files over to the directory on the volume."
@@ -131,41 +138,99 @@ echo "${cc_green}  hadoop fs -ls $VolumeDirDL${cc_normal}"
 echo
 hadoop fs -ls $VolumeDirDL 
 echo
-read -p "(Pause)"
+#read -p "(Pause)"
 
 
 echo
-echo "Now let's make copies of these files a few times to fill up the quota."
+echo "Now let's make multiple copies of these files on the cluster to fill up the quota."
 echo
 echo "${cc_green}  hadoop fs -cp $VolumeDirDL/test1* $VolumeDirDL/test2.data"
 hadoop fs -cp $VolumeDirDL/test1* $VolumeDirDL/test2.data
 echo "  hadoop fs -cp $VolumeDirDL/test2* $VolumeDirDL/test3.data"
 hadoop fs -cp $VolumeDirDL/test2* $VolumeDirDL/test3.data
-echo "  hadoop fs -cp $VolumeDirDL/test3* $VolumeDirDL/test4.data"
-hadoop fs -cp $VolumeDirDL/test3* $VolumeDirDL/test4.data
-echo "  hadoop fs -cp $VolumeDirDL/test4* $VolumeDirDL/test5.data"
-hadoop fs -cp $VolumeDirDL/test4* $VolumeDirDL/test5.data
-echo "  hadoop fs -cp $VolumeDirDL/test5* $VolumeDirDL/test6.data${cc_normal}"
-hadoop fs -cp $VolumeDirDL/test5* $VolumeDirDL/test6.data
-echo
+#echo "  hadoop fs -cp $VolumeDirDL/test3* $VolumeDirDL/test4.data"
+#hadoop fs -cp $VolumeDirDL/test3* $VolumeDirDL/test4.data
+#echo "  hadoop fs -cp $VolumeDirDL/test4* $VolumeDirDL/test5.data"
+#hadoop fs -cp $VolumeDirDL/test4* $VolumeDirDL/test5.data
+#echo "  hadoop fs -cp $VolumeDirDL/test5* $VolumeDirDL/test6.data$"
+#hadoop fs -cp $VolumeDirDL/test5* $VolumeDirDL/test6.data
+echo "${cc_normal}"
 echo "Let's see what's been replicated." 
 echo
 echo "${cc_green}  hadoop fs -ls $VolumeDirDL/${cc_normal}"
 echo
 hadoop fs -ls $VolumeDirDL/
 echo
+#read -p "(Pause)"
+
+
+# Change some of the permissions for the current setup
+echo
+echo "Let's have a look at the ACL permissions"
+echo
+#  maprcli volume info -name VolumeBlue | grep -P -o '(?<=acl).*?(?=})'
+echo "${cc_green}  maprcli acl show -type volume -name $VolumeName ${cc_normal}"
+echo 
+maprcli acl show -type volume -name $VolumeName
+echo
+echo "Now lets add a user with some permissions"
+echo 
+echo "${cc_green}  maprcli acl edit -type volume -name $VolumeName -user stuart_wilson:dump,a ${cc_normal}"
+echo
+maprcli acl edit -type volume -name $VolumeName -user stuart_wilson:dump,a
+echo
+echo "And let's look at the user list again."
+echo
+echo "${cc_green}  maprcli acl show -type volume -name $VolumeName ${cc_normal}"
+echo 
+maprcli acl show -type volume -name $VolumeName 
+echo
+#read -p "(Pause)"
+
+
+# make a file write only 
+
+echo
+echo "Let's look at the ACE for the first file."
+echo
+echo "${cc_green}  hadoop mfs -getace $VolumeDirDL/test0"$NameVar".data${cc_normal}"
+echo  
+hadoop mfs -getace $VolumeDirDL/test0"$NameVar".data
+echo
+echo "Now let's stop user stuart_wilson from reading this file."
+echo 
+echo "${cc_green}  hadoop mfs -setace -readfile '!u:stuart_wilson' $VolumeDirDL/test0"$NameVar".data${cc_normal}"
+echo
+hadoop mfs -setace -readfile '!u:stuart_wilson' $VolumeDirDL/test0"$NameVar".data
+echo
+echo "Now let's check that he has been blocked"
+echo 
+echo "${cc_green}  hadoop mfs -getace $VolumeDirDL/test0"$NameVar".data${cc_normal}"
+echo
+hadoop mfs -getace $VolumeDirDL/test0"$NameVar".data
+echo
+echo "To check run hadoop fs -tail $VolumeDirDL/test0"$NameVar".data (for test0 and test1) for both a mapr user and for stuart_wilson."
+echo
+
 read -p "(Pause)"
 
-echo "${cc_green}  hadoop fs -cp $VolumeDirDL/test6* $VolumeDirDL/test7.data"
-hadoop fs -cp $VolumeDirDL/test6* $VolumeDirDL/test7.data
-echo "  hadoop fs -cp $VolumeDirDL/test7* $VolumeDirDL/test8.data"
-hadoop fs -cp $VolumeDirDL/test7* $VolumeDirDL/test8.data
-echo "  hadoop fs -cp $VolumeDirDL/test8* $VolumeDirDL/test9.data"
-hadoop fs -cp $VolumeDirDL/test8* $VolumeDirDL/test9.data
-echo "  hadoop fs -cp $VolumeDirDL/test9* $VolumeDirDL/test10.data${cc_normal}"
-hadoop fs -cp $VolumeDirDL/test9* $VolumeDirDL/test10.data
+
+
+
+# Fill up the drive
+#echo
+#echo "Now let's continue filling up the volume with copies of the data files"
+#echo
+#echo "${cc_green}  hadoop fs -cp $VolumeDirDL/test6* $VolumeDirDL/test7.data"
+#hadoop fs -cp $VolumeDirDL/test6* $VolumeDirDL/test7.data
+#echo "  hadoop fs -cp $VolumeDirDL/test7* $VolumeDirDL/test8.data"
+#hadoop fs -cp $VolumeDirDL/test7* $VolumeDirDL/test8.data
+#echo "  hadoop fs -cp $VolumeDirDL/test8* $VolumeDirDL/test9.data"
+#hadoop fs -cp $VolumeDirDL/test8* $VolumeDirDL/test9.data
+#echo "  hadoop fs -cp $VolumeDirDL/test9* $VolumeDirDL/test10.data$"
+#hadoop fs -cp $VolumeDirDL/test9* $VolumeDirDL/test10.data
 echo
-echo "Let's see what else has been replicated." 
+echo "${cc_normal}Let's see what else has been replicated." 
 echo
 echo "${cc_green}  hadoop fs -ls $VolumeDirDL/${cc_normal}"
 echo 
@@ -178,7 +243,7 @@ echo "Now we remove the volume."
 echo
 read -p "(Are you sure you want to remove the volume?)"
 echo
-read -p "(Sure?)"
+#read -p "(Sure?)"
 maprcli volume remove -force true -name Volume$NameVar
 echo "Here are the volumes left"
 maprcli volume list -json | grep volumename
