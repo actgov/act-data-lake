@@ -68,6 +68,7 @@ echo "${cc_normal}"
 #read -p "(Pause)"
 echo
 
+# Confirm that the volume name has been created
 echo
 echo "Let's confirm the $VolumeName volume has been created"
 echo
@@ -80,8 +81,9 @@ echo
 #read -p "(Pause)"
 echo 
 
-# Check and change the quota for the volume
 
+# Check and change the quota for the volume
+echo
 echo "Now we will change quota and advisory quota for $VolumeName."
 echo
 echo "Currently the quotas are."
@@ -98,10 +100,10 @@ echo "Let's see what the quota are now."
 maprcli volume info -name $VolumeName -json | grep quota
 echo
 #read -p "(Pause)"
+echo
 
 
 # Now we fill up the disks and set off the alarms
-
 echo
 echo "Now we will fill up the volume with our test data and trigger the alarms."
 echo
@@ -121,7 +123,9 @@ echo
 hadoop fs -ls /$VolumeName
 echo
 #read -p "(Pause)"
+echo
 
+# Copy files over to the directory
 echo
 echo "Now we will copy files over to the directory on the volume."
 echo
@@ -139,8 +143,9 @@ echo
 hadoop fs -ls $VolumeDirDL 
 echo
 #read -p "(Pause)"
+echo
 
-
+# Make copies of the same file on the cluster
 echo
 echo "Now let's make multiple copies of these files on the cluster to fill up the quota."
 echo
@@ -162,7 +167,7 @@ echo
 hadoop fs -ls $VolumeDirDL/
 echo
 #read -p "(Pause)"
-
+echo
 
 # Change some of the permissions for the current setup
 echo
@@ -185,8 +190,8 @@ echo "${cc_green}  maprcli acl show -type volume -name $VolumeName ${cc_normal}"
 echo 
 maprcli acl show -type volume -name $VolumeName 
 echo
-#read -p "(Pause)"
-
+read -p "(Pause)"
+echo
 
 # make a file write only 
 
@@ -202,7 +207,7 @@ echo
 echo "${cc_green}  hadoop mfs -setace -readfile '!u:stuart_wilson' $VolumeDirDL/test0"$NameVar".data${cc_normal}"
 echo
 hadoop mfs -setace -readfile '!u:stuart_wilson' $VolumeDirDL/test0"$NameVar".data
-echo
+
 echo "Now let's check that he has been blocked"
 echo 
 echo "${cc_green}  hadoop mfs -getace $VolumeDirDL/test0"$NameVar".data${cc_normal}"
@@ -211,11 +216,66 @@ hadoop mfs -getace $VolumeDirDL/test0"$NameVar".data
 echo
 echo "To check run hadoop fs -tail $VolumeDirDL/test0"$NameVar".data (for test0 and test1) for both a mapr user and for stuart_wilson."
 echo
-
 read -p "(Pause)"
+echo
 
 
+# Set read permissions for a file to a specific AD group
 
+echo
+echo "Now let us set the read permissions for a file to a specifice AD group"
+echo
+echo "Looking at the ACE for the first file:"
+echo
+echo "${cc_green}  hadoop mfs -getace $VolumeDirDL/test0"$NameVar".data${cc_normal}"
+echo "(N.B. - this is a dangerous command as it removes previous permissions when new permissions are added. This can be seen in the following example.)"
+echo
+hadoop mfs -getace $VolumeDirDL/test0"$NameVar".data
+echo
+echo "Now let's set the read permissions for this file to the AD group 'ebis-bs_tst_rdpuser_-_ebis_warehouse'."
+echo
+echo "${cc_green}  hadoop mfs -setace -readfile 'g:ebis-bs_tst_rdpuser_-_ebis_warehouse' $VolumeDirDL/test0"$NameVar".data${cc_normal}"
+echo
+hadoop mfs -setace -readfile 'g:ebis-bs_tst_rdpuser_-_ebis_warehouse' $VolumeDirDL/test0"$NameVar".data
+echo
+echo "Now let's check that the read permissions have been changed."
+echo
+echo "${cc_green}  hadoop mfs -getace $VolumeDirDL/test0"$NameVar".data${cc_normal}"
+echo
+hadoop mfs -getace $VolumeDirDL/test0"$NameVar".data
+echo
+echo "To check run 'hadoop fs -tail $VolumeDirDL/test0"$NameVar".data' to try and read the tail end of the test0 file, both for a member of the 'ebis-bs_tst_rdpuser_-_ebis_warehouse' group (namely P.C) and also check for a non-member (possibly S.W.)."
+echo
+read -p "(Pause)"
+echo
+
+# Set write permissions for a file to a specific AD group
+echo
+echo "Now let us set the write permissions for a file to a specifice AD group"
+echo
+echo "Looking at the ACE for the first file:"
+echo
+echo "${cc_green}  hadoop mfs -getace $VolumeDirDL/test0"$NameVar".data${cc_normal}"
+echo "(N.B. - this is a dangerous command as it removes previous permissions when new permissions are added. This can be seen in the following example.)"
+echo
+hadoop mfs -getace $VolumeDirDL/test0"$NameVar".data
+echo
+echo "Now let's set the write permissions for this file to the AD group 'ebis-bs_tst_rdpuser_-_ebis_warehouse'."
+echo
+echo "${cc_green}  hadoop mfs -setace -writefile 'g:ebis-bs_tst_rdpuser_-_ebis_warehouse' $VolumeDirDL/test0"$NameVar".data${cc_normal}"
+echo
+hadoop mfs -setace -writefile 'g:ebis-bs_tst_rdpuser_-_ebis_warehouse' $VolumeDirDL/test0"$NameVar".data
+echo
+echo "Now let's check that the write permissions have been changed."
+echo
+echo "${cc_green}  hadoop mfs -getace $VolumeDirDL/test0"$NameVar".data${cc_normal}"
+echo
+hadoop mfs -getace $VolumeDirDL/test0"$NameVar".data
+echo
+echo "To check run 'echo "some test words" | hadoop fs -appendToFile - $VolumeDirDL/test0"$NameVar".data' by a user from the group 'ebis-bs_tst_rpduser...' to append some random 'test words' to the file, then run 'hadoop fs -tail $VolumeDirDl/test0"$NameVar".data' to confirm the file has been written to."
+echo
+read -p "(Pause)"
+echo
 
 # Fill up the drive
 #echo
