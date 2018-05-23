@@ -20,7 +20,7 @@ cc_normal=`echo -en "${esc}[m\017"`
 LocalDir=$"/tmp"
 
 # Below is a variable (random word) that is used to ensure these are unique tests
-NameVar=$"Blue"
+NameVar=$"Orange"
 echo
 echo "(" $NameVar "is the unique word to ensure these tests are current.)"
 echo
@@ -65,7 +65,7 @@ echo
 echo "${cc_green}  maprcli volume create -name "Volume"$NameVar -path /Volume$NameVar -advisoryquota 100M -quota 500M -replication 3 -schedule 2 -type rw"
 maprcli volume create -name "Volume"$NameVar -path /Volume$NameVar -advisoryquota 100M -quota 500M -replication 3 -schedule 2 -type rw
 echo "${cc_normal}"
-#read -p "(Pause)"
+read -p "(Pause)"
 echo
 
 # Confirm that the volume name has been created
@@ -78,7 +78,7 @@ maprcli volume list -json | grep $VolumeName
 echo
 echo "Just created a volume called "$VolumeName", which can also be confirmed in the MCS"
 echo
-#read -p "(Pause)"
+read -p "(Pause)"
 echo 
 
 
@@ -99,7 +99,7 @@ echo
 echo "Let's see what the quota are now."
 maprcli volume info -name $VolumeName -json | grep quota
 echo
-#read -p "(Pause)"
+read -p "(Pause)"
 echo
 
 
@@ -122,7 +122,7 @@ echo "${cc_green}  hapdoop fs -ls /$VolumeName ${cc_normal}"
 echo
 hadoop fs -ls /$VolumeName
 echo
-#read -p "(Pause)"
+read -p "(Pause)"
 echo
 
 # Copy files over to the directory
@@ -142,8 +142,75 @@ echo "${cc_green}  hadoop fs -ls $VolumeDirDL${cc_normal}"
 echo
 hadoop fs -ls $VolumeDirDL 
 echo
-#read -p "(Pause)"
+read -p "(Pause)"
 echo
+
+
+################################################################################
+#  Create a snapshot
+SnapShot="SnapShot"$NameVar
+echo
+echo "Now we will create a snapshot of the Volume "$VolumeName" called "$SnapShot
+echo
+echo "${cc_green}  maprcli volume snapshot create -snapshotname $SnapShot -volume $VolumeName ${cc_normal}"
+echo
+maprcli volume snapshot create -snapshotname $SnapShot -volume $VolumeName
+echo
+echo
+echo "Let's confirm the snapshot was created"
+echo 
+echo "${cc_green}  maprcli volume snapshot list -volume "$VolumeName" ${cc_normal}"
+echo
+maprcli volume snapshot list -volume $VolumeName
+echo
+read -p "(Pause)"
+echo
+echo "Let's delete the file "$VolumeDirDL"/test1.data"
+echo "The files present are ..."
+hadoop fs -ls $VolumeDirDL/
+echo 
+echo "Now let's delete it"
+echo
+echo "${cc_green}  hadoop fs -rm "$VolumeDirDL"/test1$NameVar.data${cc_normal}" 
+echo
+hadoop fs -rm $VolumeDirDL/test1$NameVar.data
+echo
+echo "Confirm it's gone"
+echo
+hadoop fs -ls $VolumeDirDL/
+echo
+read -p "(Pause)"
+echo
+echo "Now let's recover the file from the snapshot."
+echo
+echo "${cc_green}  hadoop fs -cp /$VolumeName/.snapshot/$SnapShot/$DirectoryDL/test1$NameVar.data $VolumeDirDL/test1$NameVar.data_recovered${cc_normal}"
+echo
+hadoop fs -cp /$VolumeName/.snapshot/$SnapShot/$DirectoryDL/test1$NameVar.data $VolumeDirDL/test1$NameVar.data_recovered
+echo
+echo "Now let's check that it's there"
+echo
+hadoop fs -ls $VolumeDirDL
+echo
+read -p "(Pause)"
+echo
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # Make copies of the same file on the cluster
 echo
@@ -166,7 +233,7 @@ echo "${cc_green}  hadoop fs -ls $VolumeDirDL/${cc_normal}"
 echo
 hadoop fs -ls $VolumeDirDL/
 echo
-#read -p "(Pause)"
+read -p "(Pause)"
 echo
 
 # Change some of the permissions for the current setup
