@@ -65,8 +65,9 @@ echo
 echo "${cc_green}  maprcli volume create -name "Volume"$NameVar -path /Volume$NameVar -advisoryquota 100M -quota 500M -replication 3 -schedule 2 -type rw"
 maprcli volume create -name "Volume"$NameVar -path /Volume$NameVar -advisoryquota 100M -quota 500M -replication 3 -schedule 2 -type rw
 echo "${cc_normal}"
-read -p "(Pause)"
+#read -p "(Pause)"
 echo
+sleep 6 
 
 # Confirm that the volume name has been created
 echo
@@ -78,7 +79,7 @@ maprcli volume list -json | grep $VolumeName
 echo
 echo "Just created a volume called "$VolumeName", which can also be confirmed in the MCS"
 echo
-read -p "(Pause)"
+#read -p "(Pause)"
 echo 
 
 
@@ -99,7 +100,7 @@ echo
 echo "Let's see what the quota are now."
 maprcli volume info -name $VolumeName -json | grep quota
 echo
-read -p "(Pause)"
+#read -p "(Pause)"
 echo
 
 
@@ -122,7 +123,7 @@ echo "${cc_green}  hapdoop fs -ls /$VolumeName ${cc_normal}"
 echo
 hadoop fs -ls /$VolumeName
 echo
-read -p "(Pause)"
+#read -p "(Pause)"
 echo
 
 # Copy files over to the directory
@@ -142,7 +143,7 @@ echo "${cc_green}  hadoop fs -ls $VolumeDirDL${cc_normal}"
 echo
 hadoop fs -ls $VolumeDirDL 
 echo
-read -p "(Pause)"
+#read -p "(Pause)"
 echo
 
 
@@ -163,7 +164,7 @@ echo "${cc_green}  maprcli volume snapshot list -volume "$VolumeName" ${cc_norma
 echo
 maprcli volume snapshot list -volume $VolumeName
 echo
-read -p "(Pause)"
+#read -p "(Pause)"
 echo
 echo "Let's delete the file "$VolumeDirDL"/test1.data"
 echo "The files present are ..."
@@ -179,7 +180,7 @@ echo "Confirm it's gone"
 echo
 hadoop fs -ls $VolumeDirDL/
 echo
-read -p "(Pause)"
+#read -p "(Pause)"
 echo
 echo "Now let's recover the file from the snapshot."
 echo
@@ -191,23 +192,8 @@ echo "Now let's check that it's there"
 echo
 hadoop fs -ls $VolumeDirDL
 echo
-read -p "(Pause)"
+#read -p "(Pause)"
 echo
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -233,7 +219,7 @@ echo "${cc_green}  hadoop fs -ls $VolumeDirDL/${cc_normal}"
 echo
 hadoop fs -ls $VolumeDirDL/
 echo
-read -p "(Pause)"
+#read -p "(Pause)"
 echo
 
 # Change some of the permissions for the current setup
@@ -257,7 +243,7 @@ echo "${cc_green}  maprcli acl show -type volume -name $VolumeName ${cc_normal}"
 echo 
 maprcli acl show -type volume -name $VolumeName 
 echo
-read -p "(Pause)"
+#read -p "(Pause)"
 echo
 
 # make a file write only 
@@ -283,7 +269,7 @@ hadoop mfs -getace $VolumeDirDL/test0"$NameVar".data
 echo
 echo "To check run hadoop fs -tail $VolumeDirDL/test0"$NameVar".data (for test0 and test1) for both a mapr user and for stuart_wilson."
 echo
-read -p "(Pause)"
+#read -p "(Pause)"
 echo
 
 
@@ -295,6 +281,7 @@ echo
 echo "Looking at the ACE for the first file:"
 echo
 echo "${cc_green}  hadoop mfs -getace $VolumeDirDL/test0"$NameVar".data${cc_normal}"
+echo
 echo "(N.B. - this is a dangerous command as it removes previous permissions when new permissions are added. This can be seen in the following example.)"
 echo
 hadoop mfs -getace $VolumeDirDL/test0"$NameVar".data
@@ -313,7 +300,7 @@ hadoop mfs -getace $VolumeDirDL/test0"$NameVar".data
 echo
 echo "To check run 'hadoop fs -tail $VolumeDirDL/test0"$NameVar".data' to try and read the tail end of the test0 file, both for a member of the 'ebis-bs_tst_rdpuser_-_ebis_warehouse' group (namely P.C) and also check for a non-member (possibly S.W.)."
 echo
-read -p "(Pause)"
+#read -p "(Pause)"
 echo
 
 # Set write permissions for a file to a specific AD group
@@ -323,6 +310,7 @@ echo
 echo "Looking at the ACE for the first file:"
 echo
 echo "${cc_green}  hadoop mfs -getace $VolumeDirDL/test0"$NameVar".data${cc_normal}"
+echo
 echo "(N.B. - this is a dangerous command as it removes previous permissions when new permissions are added. This can be seen in the following example.)"
 echo
 hadoop mfs -getace $VolumeDirDL/test0"$NameVar".data
@@ -341,7 +329,7 @@ hadoop mfs -getace $VolumeDirDL/test0"$NameVar".data
 echo
 echo "To check run 'echo "some test words" | hadoop fs -appendToFile - $VolumeDirDL/test0"$NameVar".data' by a user from the group 'ebis-bs_tst_rpduser...' to append some random 'test words' to the file, then run 'hadoop fs -tail $VolumeDirDl/test0"$NameVar".data' to confirm the file has been written to."
 echo
-read -p "(Pause)"
+#read -p "(Pause)"
 echo
 
 # Fill up the drive
@@ -363,12 +351,12 @@ echo "${cc_green}  hadoop fs -ls $VolumeDirDL/${cc_normal}"
 echo 
 hadoop fs -ls $VolumeDirDL/
 echo
-read -p "(Pause)"
+#read -p "(Pause)"
 # Remove the volume
 echo
 echo "Now we remove the volume."
 echo
-read -p "(Are you sure you want to remove the volume?)"
+#read -p "(Are you sure you want to remove the volume?)"
 echo
 #read -p "(Sure?)"
 maprcli volume remove -force true -name Volume$NameVar
